@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import requests
+import json
 
 all_commands = ['list', 'stop', 'remove', 'help', 'create', 'info']
 
@@ -32,10 +33,10 @@ class CunikCLI:
     def list():
         r = requests.get(base_url + 'cunik/list')
         if r.status_code == 200:
-            for id in list(r.text):
-                print(id)
-                CunikCLI.info(id)
-            return r.text
+            j = json.loads(r.text)
+            for i in j:
+                CunikCLI.info(i)
+            return j
         else:
             print('ERROR')
             return []
@@ -68,7 +69,8 @@ class CunikCLI:
     def info(id):
         r = requests.post(base_url + 'cunik/info', data={'cid': id})
         if r.status_code == 200:
-            print(json.loads(r.text))
+            j = json.loads(r.text)
+            print("{}  {}  {}".format(j['uuid'],j['name'],j['status']))
         else:
             print('ERROR')
 
